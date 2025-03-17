@@ -28,7 +28,7 @@ const RulesModal = ({onClose, colourblindMode}) => {
                 <span>All information is taken from <a className="external-link" href="https://coppermind.net">Coppermind</a></span>
                 <br/>
                 <span>Inspired by <a className="external-link" href="https://loldle.net/">LoLdle</a> and <a className="external-link" href="https://smidle.net/">Smidle</a></span>
-              </div>
+                </div>
             </div>
           </div>
     </>

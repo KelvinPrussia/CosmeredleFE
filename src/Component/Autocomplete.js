@@ -6,7 +6,6 @@ export default function Autocompletecharacters({
   characters,
   onChange,
   guesses,
-  disabled,
   onKeyDown,
 }) {
   const options = characters;
@@ -25,7 +24,6 @@ export default function Autocompletecharacters({
         options={options}
         onChange={handleAutoCompleteChange}
         getOptionDisabled={(option) => guesses.includes(option)}
-        disabled={disabled}
         onKeyDown={onKeyDown}
         renderInput={(params) => (
           <TextField

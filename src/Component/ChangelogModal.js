@@ -9,6 +9,16 @@ const ChangelogModal = ({onClose}) => {
               <img className="exit-btn" src="images/close.png" alt="Close pop-up" onClick={onClose}/>
               <h1 className="modal-title">What's new!</h1>
               <div className="modal-text changelog-text">
+              <span className="changelog-date">09/06/2025</span>
+                <hr/>
+                <ul className="changelog-list">
+                  <li className="changelog-heading">New Features:</li>
+                    <li className="changelog-item">Added ability to share the results after giving up</li>
+                    <li className="changelog-item">Added colourblind friendly share icons</li>
+                    <li className="changelog-item">Added confirm popup for giving up</li>
+                    <li className="changelog-item">Can now close the Give Up screen to see the correct attributes!</li>
+                    <li className="changelog-item">Added button to show results popup after closing it (no need to refresh)</li>
+                </ul>
                 <span className="changelog-date">28/02/2025</span>
                 <hr/>
                 <ul className="changelog-list">
