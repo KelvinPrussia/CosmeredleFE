@@ -9,7 +9,7 @@ const ChangelogModal = ({onClose}) => {
               <img className="exit-btn" src="images/close.png" alt="Close pop-up" onClick={onClose}/>
               <h1 className="modal-title">What's new!</h1>
               <div className="modal-text changelog-text">
-              <span className="changelog-date">09/06/2025</span>
+              <span className="changelog-date">21/06/2025</span>
                 <hr/>
                 <ul className="changelog-list">
                   <li className="changelog-heading">New Features:</li>
