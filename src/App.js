@@ -4,11 +4,11 @@ import Tooltip from '@mui/material/Tooltip';
 import "./App.css";
 import Autocompletecharacters from "./Component/Autocomplete";
 import Guessbox from "./Component/Guessbox";
-import GameWonModal from "./Component/GameWonModal";
+import GameResultModal from "./Component/GameResultModal";
 import NewGameAlertModal from "./Component/NewGameAlertModal";
 import RulesModal from "./Component/RulesModal";
-import GiveUpModal from "./Component/GiveUpModal";
 import SettingsModal from "./Component/SettingsModal";
+import GiveUpModal from "./Component/GiveUpModal";
 import ChangelogModal from "./Component/ChangelogModal";
 import DisclaimerModal from "./Component/DisclaimerModal";
 
@@ -20,8 +20,9 @@ function App() {
   const [openEmailTooltip, setOpenEmailTooltip] = useState(false);
   const [showRulesModal, setShowRulesModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showGiveUpModal, setShowGiveUpModal] = useState(false);
   const [showChangelogModal, setChangelogModal] = useState(false);
-  const [showGameWonModal, setGameWonModal] = useState(false);
+  const [showGameResultModal, setGameResultModal] = useState(false);
   const [blockGuess, setBlockGuess] = useState(false);
   const [gameWon, setGameWon] = useState(() => {
     const storedWin = localStorage.getItem("gameWon");
@@ -112,16 +113,11 @@ function App() {
 
   function makeGuess() {
     setBlockGuess(true);
+    
     api("/guess/" + selectedCharacter)
       .then((response) => {
-        const res = response.data;
-        const newGuess = {
-          name: res.name,
-          home_world: res.home_world,
-          first_appearance: res.first_appearance,
-          species: res.species,
-          abilities: res.abilities,
-        };
+        const newGuess = response.data;
+        
         addGuess(newGuess);
         updateGuessCount();
         setSelectedCharacter(null);
@@ -132,17 +128,22 @@ function App() {
         if (error.response) {
           console.log(error.response);
           console.log(error.response.status);
-          console.log(error.respoonse.headers);
+          console.log(error.response.headers);
         }
       });
   }
 
-  function getCorrectChar() {
+  function getCorrectChar(hasGivenUp) {
+    hasGivenUp = typeof hasGivenUp === "boolean" ? hasGivenUp : gaveUp;
     api("/correctchar")
       .then((response) => {
         const res = response.data;
         setCorrectChar(res.name);
-      })
+        if (hasGivenUp) {
+          const givenUpAnswer = normalizeGaveUp(res)
+          addGuess(givenUpAnswer);
+  }
+        })
       .catch((error) => {
         if (error.response) {
           console.log(error.response);
@@ -150,6 +151,16 @@ function App() {
           console.log(error.respoonse.headers);
         }
       });
+  }
+
+  function normalizeGaveUp(responseData) {
+    return {
+      name: [responseData.name, -1],
+      home_world: [responseData.home_world, -1],
+      first_appearance: [responseData.first_appearance, -1],
+      species: [responseData.species, -1],
+      abilities: [responseData.abilities, -1],
+    };
   }
 
   function calcTimeRemaining() {
@@ -175,6 +186,12 @@ function App() {
     setPlayDate(new Date().toISOString().split('T')[0]); 
     setSelectedCharacter("");
     setGaveUp(false);
+    setBlockGuess(false);
+  }
+
+  function clearLocalStorage() {
+    localStorage.clear()
+    window.location.reload();
   }
 
   function checkNewGame(hours, minutes, seconds) {
@@ -190,8 +207,9 @@ function App() {
 
   function giveUp() {
     setGaveUp(true);
-    setSelectedCharacter("");
-    getCorrectChar();
+
+    setGameResultModal(true);
+    getCorrectChar(true);
   }
 
   function toggleShowRulesModal() {
@@ -200,6 +218,10 @@ function App() {
 
   function toggleShowSettingsModal() {
     setShowSettingsModal(!showSettingsModal);
+  }
+
+  function toggleShowGiveUpModal() {
+    setShowGiveUpModal(!showGiveUpModal);
   }
 
   function toggleColourBlindMode() {
@@ -215,8 +237,8 @@ function App() {
     localStorage.setItem("WaTSpoilerDisclaimer", JSON.stringify(false))
   }
 
-  function hideGameWonModal() {
-    setGameWonModal(false);
+  function hideGameResultModal() {
+    setGameResultModal(false);
   }
 
   function copyEmail() {
@@ -235,14 +257,29 @@ function App() {
       let shareLine = [];
       for (let value in guess) {
         switch (guess[value][1]) {
+          case -1:
+            shareLine.push("❌");
+            break
           case 0:
-            shareLine.push("🟥")
+            if (colourblindMode) {
+              shareLine.push("⬜")
+            } else {
+              shareLine.push("🟥")
+            } 
             break;
           case 1:
-            shareLine.push("🟨")
+            if (colourblindMode) {
+              shareLine.push("🟪");
+            } else {
+              shareLine.push("🟨");
+            }
             break;
           case 2:
-            shareLine.push("🟩")
+            if (colourblindMode) {
+              shareLine.push("🟦")
+            } else {
+              shareLine.push("🟩")
+            }
             break;
           default:
             return
@@ -280,8 +317,8 @@ function App() {
 
   useEffect(() => {
     localStorage.setItem("gameWon", JSON.stringify(gameWon));
-    setGameWonModal(gameWon);
-  }, [gameWon]);
+    setGameResultModal((gameWon || gaveUp));
+  }, [gameWon, gaveUp]);
 
   useEffect(() => {
     localStorage.setItem("guessCount", JSON.stringify(guessCount));
@@ -314,32 +351,38 @@ function App() {
       <header className="App-header">
         <h1 className="header-txt">Cosmeredle</h1>
       </header>
-      <div className="search-container">
-        <div className="searchbar">
-          {characterList.names ? (
-            <Autocompletecharacters
-              className="autocomplete-search"
-              onChange={autocompleteChange}
-              characters={characterList.names.sort()}
-              guesses={guessList.map((value) => value.name[0])}
-              disabled={gameWon}
-              onKeyDown={handleKeyDown}
-            />
-          ) : (
-            <p>Loading Characters...</p>
-          )}
-          <button
-            className="guess-btn"
-            disabled={!selectedCharacter || blockGuess}
-            onClick={makeGuess}
-          >
-            Guess
-          </button>
+      {!(gaveUp || gameWon) && (
+        <div className="search-container">
+          <div className="searchbar">
+            {characterList.names ? (
+              <Autocompletecharacters
+                className="autocomplete-search"
+                onChange={autocompleteChange}
+                characters={characterList.names.sort()}
+                guesses={guessList.map((value) => value.name[0])}
+                onKeyDown={handleKeyDown}
+              />
+            ) : (
+              <p>Loading Characters...</p>
+            )}
+            <button
+              className="guess-btn"
+              disabled={!selectedCharacter || blockGuess || gameWon || gaveUp}
+              onClick={makeGuess}
+            >
+              Guess
+            </button>
+          </div>
         </div>
-      </div>
-        {guessCount >= 5 && gameWon === false && (<div>
-          <button className="give-up-btn" onClick={giveUp}>
+      )}
+        {guessCount >= 5 && gameWon === false && gaveUp === false && (<div>
+          <button className="give-up-btn" onClick={toggleShowGiveUpModal}>
             Give up?
+          </button>
+        </div>)}
+        {(gameWon === true || gaveUp === true) && (<div>
+          <button className="show-results-btn" onClick={() => setGameResultModal(true)}>
+            Show Results
           </button>
         </div>)}
       <div>
@@ -347,7 +390,12 @@ function App() {
           New round in {hours}:{minutes}:{seconds}
         </p>
       </div>
-      {/* <button onClick={resetGame}>reset</button>  */}
+      {process.env.NODE_ENV === 'development' && (
+        <button onClick={resetGame}>resetGame</button>
+      )}
+      {process.env.NODE_ENV === 'development' && (
+        <button onClick={clearLocalStorage}>clearLocalStorage</button>
+      )}
       <div className="title-wrapper">
         <div className="guess-title">
           <h3 className="title-text">Name</h3>
@@ -392,15 +440,16 @@ function App() {
         )}
       </div>
       <div>
-        {showGameWonModal && (
-          <GameWonModal
+        {showGameResultModal && (
+          <GameResultModal
             character={correctChar}
             hours={hours}
             minutes={minutes}
             seconds={seconds}
             guessCount={guessCount}
             guessResults={generateShareIcons(guessList)}
-            onClose={hideGameWonModal}
+            gameWon={gameWon}
+            onClose={hideGameResultModal}
           />
         )}
       </div>
@@ -441,21 +490,13 @@ function App() {
         </Tooltip>
       </div>
       <div>
-        {gaveUp && (
-          <GiveUpModal
-          gaveUp= {gaveUp }
-          character={correctChar}
-          hours={hours}
-          minutes={minutes}
-          seconds={seconds}
-          />
-        )}
-      </div>
-      <div>
         {showRulesModal && (<RulesModal onClose={toggleShowRulesModal} colourblindMode={colourblindMode}/>)}
       </div>
       <div>
         {showSettingsModal && (<SettingsModal onClose={toggleShowSettingsModal} colourblindMode={colourblindMode} toggleColourBlindMode={toggleColourBlindMode}/>)}
+      </div>
+      <div>
+        {showGiveUpModal && (<GiveUpModal onClose={toggleShowGiveUpModal} giveUp={giveUp}/>)}
       </div>
       <div>
         {showChangelogModal && (<ChangelogModal onClose={toggleChangelogModal}/>)}
