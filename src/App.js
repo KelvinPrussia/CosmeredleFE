@@ -11,6 +11,8 @@ import SettingsModal from "./Component/SettingsModal";
 import GiveUpModal from "./Component/GiveUpModal";
 import ChangelogModal from "./Component/ChangelogModal";
 import DisclaimerModal from "./Component/DisclaimerModal";
+import background from "./Assets/CosmeredleBackground.webp";
+import kofiLogo from "./Assets/kofi_logo.png";
 
 function App() {
   const [characterList, setCharacterList] = useState("");
@@ -347,7 +349,7 @@ function App() {
 
   return (
     <div className="App">
-      <img className="background-img" src="/images/CosmeredleBackground.png" alt="Cosmere constellation background"/>
+      <img className="background-img" src={background} alt="Cosmere constellation background"/>
       <header className="App-header">
         <h1 className="header-txt">Cosmeredle</h1>
       </header>
@@ -484,7 +486,7 @@ function App() {
           disableInteractive>
           <div className="kofi-btn">
             <a className="kofi-link" href="https://ko-fi.com/kelvinprussia">
-              <img className="kofi-img" src="/images/kofi_logo.png" alt="Kofi logo"/>
+              <img className="kofi-img" src={kofiLogo} alt="Kofi logo"/>
             </a>
           </div>
         </Tooltip>

@@ -293,12 +293,12 @@
 }
 
 .settings-btn {
-  background-image: url("../public/images/settingsInactive.png");
+  background-image: url("/src/Assets/settingsInactive.png");
   background-size: contain;
 }
 
 .settings-btn:hover {
-  background-image: url("../public/images/settingsActive.png");
+  background-image: url("/src/Assets/settingsActive.png");
 }
 
 .menu-btn {
@@ -448,25 +448,25 @@
 }
 
 .rules-btn {
-  background-image: url("../public/images/rulesInactive.png");
+  background-image: url("/src/Assets/rulesInactive.png");
   background-size: contain;
 }
 
 .rules-btn:hover {
-  background-image: url("../public/images/rulesActive.png");
+  background-image: url("/src/Assets/rulesActive.png");
 }
 
 .changelog-btn {
-  background-image: url("../public/images/changelogInactive.png");
+  background-image: url("/src/Assets/changelogInactive.png");
   background-size: contain;
 }
 
 .changelog-btn:hover {
-  background-image: url("../public/images/changelogActive.png");
+  background-image: url("/src/Assets/changelogActive.png");
 }
 
 .disclaimer-btn {
-  background-image: url("../public/images/Skybreakers_glyph.png");
+  background-image: url("/src/Assets/Skybreakers_glyph.png");
   background-size: contain;
 }
 

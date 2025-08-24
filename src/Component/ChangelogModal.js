@@ -1,4 +1,5 @@
 import React from "react";
+import closeIcon from "../Assets/close.png";
 
 const ChangelogModal = ({onClose}) => {
   return (
@@ -6,7 +7,7 @@ const ChangelogModal = ({onClose}) => {
           <div>
             <div className="modal-overlay" onClick={onClose} />
             <div className="modal-content changelog-modal">
-              <img className="exit-btn" src="images/close.png" alt="Close pop-up" onClick={onClose}/>
+              <img className="exit-btn" src={closeIcon} alt="Close pop-up" onClick={onClose}/>
               <h1 className="modal-title">What's new!</h1>
               <div className="modal-text changelog-text">
               <span className="changelog-date">21/06/2025</span>

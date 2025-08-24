@@ -1,4 +1,5 @@
 import React from "react";
+import closeIcon from "../Assets/close.png";
 
 const RulesModal = ({onClose, colourblindMode}) => {
   return (
@@ -6,7 +7,7 @@ const RulesModal = ({onClose, colourblindMode}) => {
           <div>
             <div className="modal-overlay" onClick={onClose} />
             <div className="modal-content rules-modal">
-              <img className="exit-btn" src="images/close.png" alt="Close pop-up" onClick={onClose}/>
+              <img className="exit-btn" src={closeIcon} alt="Close pop-up" onClick={onClose}/>
               <h1 className="modal-title">How to play</h1>
               <div className="modal-text rules-text">
                 <span>Try to guess a different Cosmere character every day by using the hints given.</span>

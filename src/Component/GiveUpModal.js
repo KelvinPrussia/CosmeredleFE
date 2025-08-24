@@ -1,4 +1,5 @@
 import React from "react";
+import closeIcon from "../Assets/close.png";
 
 const GiveUpConfirmationModal = ({ onClose, giveUp }) => {
   const handleConfirm = () => {
@@ -12,7 +13,7 @@ const GiveUpConfirmationModal = ({ onClose, giveUp }) => {
       <div className="modal-content give-up-modal">
         <img
           className="exit-btn"
-          src="images/close.png"
+          src={closeIcon}
           alt="Close pop-up"
           onClick={onClose}
         />
